@@ -52,12 +52,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Prepare glyph_brush
-    let inconsolata = ab_glyph::FontArc::try_from_slice(include_bytes!(
-        "Inconsolata-Regular.ttf"
-    ))?;
+    let inconsolata = ab_glyph::FontArc::try_from_slice(include_bytes!("Inconsolata-Regular.ttf"))?;
 
-    let mut glyph_brush = GlyphBrushBuilder::using_font(inconsolata)
-        .build(&device, render_format);
+    let mut glyph_brush = GlyphBrushBuilder::using_font(inconsolata).build(&device, render_format);
 
     // Render loop
     window.request_redraw();
@@ -87,11 +84,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
             winit::event::Event::RedrawRequested { .. } => {
                 // Get a command encoder for the current frame
-                let mut encoder = device.create_command_encoder(
-                    &wgpu::CommandEncoderDescriptor {
-                        label: Some("Redraw"),
-                    },
-                );
+                let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("Redraw"),
+                });
 
                 // Get the next frame
                 let frame = swap_chain
@@ -101,29 +96,23 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                 // Clear frame
                 {
-                    let _ = encoder.begin_render_pass(
-                        &wgpu::RenderPassDescriptor {
-                            label: Some("Render pass"),
-                            color_attachments: &[
-                                wgpu::RenderPassColorAttachmentDescriptor {
-                                    attachment: &frame.view,
-                                    resolve_target: None,
-                                    ops: wgpu::Operations {
-                                        load: wgpu::LoadOp::Clear(
-                                            wgpu::Color {
-                                                r: 0.4,
-                                                g: 0.4,
-                                                b: 0.4,
-                                                a: 1.0,
-                                            },
-                                        ),
-                                        store: true,
-                                    },
-                                },
-                            ],
-                            depth_stencil_attachment: None,
-                        },
-                    );
+                    let _ = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                        label: Some("Render pass"),
+                        color_attachments: &[wgpu::RenderPassColorAttachment {
+                            view: &frame.view,
+                            resolve_target: None,
+                            ops: wgpu::Operations {
+                                load: wgpu::LoadOp::Clear(wgpu::Color {
+                                    r: 0.4,
+                                    g: 0.4,
+                                    b: 0.4,
+                                    a: 1.0,
+                                }),
+                                store: true,
+                            },
+                        }],
+                        depth_stencil_attachment: None,
+                    });
                 }
 
                 glyph_brush.queue(Section {
